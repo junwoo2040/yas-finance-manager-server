@@ -1,0 +1,81 @@
+//record  This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+model User {
+  // Metadata
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+
+  // User Information
+  email     String  @unique
+  firstName String
+  lastName  String
+  username  String  @unique
+  password  String
+  school    String?
+  isAdmin   Boolean @default(false)
+
+  // Relations
+  donation Donation[]
+  sales    Sales[]
+}
+
+model Donation {
+  // Metadata
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+
+  // Donation Information
+  donorName    String
+  donorContact String
+  amount       Float
+
+  // Relations
+  author   User?   @relation(fields: [authorId], references: [id])
+  authorId String? @db.Uuid
+}
+
+model Sales {
+  // Metadata
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+
+  // Sales information
+  clientName    String
+  clientContact String
+  product       String
+  price         Float
+  quantity      Int
+  discount      Float?
+
+  // Relations
+  author   User?   @relation(fields: [authorId], references: [id])
+  authorId String? @db.Uuid
+}
+
+model AccountRequest {
+  // Metadata
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+
+  // Request information
+  email     String  @unique
+  firstName String
+  lastName  String
+  username  String  @unique
+  password  String
+  school    String?
+}
